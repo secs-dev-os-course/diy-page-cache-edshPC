@@ -1,12 +1,17 @@
 #pragma once
 
 #ifdef CACHE_READER_EXPORTS
-#define CRAPI extern "C" __declspec(dllexport)
+#define CRAPI __declspec(dllexport)
 #else
-#define CRAPI extern "C" __declspec(dllimport)
+#define CRAPI __declspec(dllimport)
 #endif
 
 #include <sys/types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 // Открытие файла по заданному пути файла, доступного для чтения
 CRAPI int lab2_open(const char *path);
@@ -25,3 +30,8 @@ CRAPI off_t lab2_lseek(int fd, off_t offset, int whence);
 
 // Синхронизация данных из кэша с диском
 CRAPI int lab2_fsync(int fd);
+
+
+#ifdef __cplusplus
+}
+#endif
