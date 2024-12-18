@@ -1,16 +1,19 @@
 #pragma once
 
+#include <utility>
+
 #include "Global.h"
 
 namespace os {
-    template<typename T>
+    using T = std::vector<char>;
+
     class LFUCache {
         struct Block {
             int key;
             int frequency;
             T value;
 
-            Block(int k, const T& v, int f) : key(k), value(v), frequency(f) {}
+            Block(int k, T& v, int f) : key(k), value(std::move(v)), frequency(f) {}
         };
         struct Compare {
             bool operator()(const Block* a, const Block* b) const {
@@ -26,8 +29,8 @@ namespace os {
     public:
         explicit LFUCache(size_t cacheSize);
 
-        void refer(int key, const T& value);
-        T& get(int key, std::function<T&(int key)> supplier);
+        void refer(int key, T& value);
+        T& get(int key, const std::function<T&(int key)>& supplier);
 
     private:
         void evictLFU();

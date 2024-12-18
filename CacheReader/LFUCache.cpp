@@ -1,12 +1,10 @@
 #include "LFUCache.h"
 
 namespace os {
-    template<typename T>
-    LFUCache<T>::LFUCache(size_t cacheSize) : cacheSize(cacheSize) {
+    LFUCache::LFUCache(size_t cacheSize) : cacheSize(cacheSize) {
     }
 
-    template<typename T>
-    void LFUCache<T>::refer(int key, const T& value) {
+    void LFUCache::refer(int key, T& value) {
         if (cache.contains(key)) {
             incrementFrequency(key);
             return;
@@ -21,15 +19,13 @@ namespace os {
         std::cout << "Cache block " << key << " inserted.\n";
     }
 
-    template<typename T>
-    T& LFUCache<T>::get(int key, std::function<T&(int)> supplier) {
-        T& value = cache.contains(key) ? cache.at(key) : supplier(key);
+    T& LFUCache::get(int key, const std::function<T&(int)>& supplier) {
+        T& value = cache.contains(key) ? cache.at(key)->value : supplier(key);
         refer(key, value);
         return value;
     }
 
-    template<typename T>
-    void LFUCache<T>::evictLFU() {
+    void LFUCache::evictLFU() {
         if (!blocks.empty()) {
             Block* lfuBlock = *blocks.begin(); // Находим блок с наименьшей частотой
             blocks.erase(blocks.begin());
@@ -38,9 +34,8 @@ namespace os {
             delete lfuBlock; // Освобождаем память
         }
     }
-
-    template<typename T>
-    void LFUCache<T>::incrementFrequency(int key) {
+    
+    void LFUCache::incrementFrequency(int key) {
         Block *block = cache[key];
         blocks.erase(block); // Удаляем из set
         ++block->frequency; // Увеличиваем частоту
