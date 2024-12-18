@@ -8,7 +8,5 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-
-namespace os {
-    using std::string;
-}
+#include <set>
+#include <functional>
