@@ -13,6 +13,7 @@ namespace os {
 // Открытие файла по заданному пути файла, доступного для чтения
 int lab2_open(int *fd, const char *path) {
     try {
+        if (!fd || !path) return -1;
         auto reader = new os::CacheReader(path);
         *fd = reader->open();
         os::readers[*fd] = reader;
@@ -34,8 +35,10 @@ int lab2_close(int fd) {
 // Чтение данных из файла
 int lab2_read(int fd, void *buf, size_t count, size_t *read) {
     try {
+        if (!buf) return -1;
         auto reader = os::readers.at(fd);
-        *read = reader->read(buf, count);
+        size_t res = reader->read(buf, count);
+        if (read) *read = res;
         return 0;
     } CATCH_N_PRINT;
 }
@@ -43,8 +46,10 @@ int lab2_read(int fd, void *buf, size_t count, size_t *read) {
 // Запись данных в файл
 int lab2_write(int fd, const void *buf, size_t count, size_t *written) {
     try {
+        if (!buf) return -1;
         auto reader = os::readers.at(fd);
-        *written = reader->write(buf, count);
+        size_t res = reader->write(buf, count);
+        if (written) *written = res;
         return 0;
     } CATCH_N_PRINT;
 }
