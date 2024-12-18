@@ -11,7 +11,8 @@ add_compile_options(/utf-8)
 
 add_library(CacheReader SHARED ""
         CacheReaderAPI.h
-        CacheReaderAPI.cpp)
+        CacheReaderAPI.cpp
+        Global.h)
 target_include_directories(CacheReader PRIVATE ${CMAKE_SOURCE_DIR})
 
 target_sources(CacheReader PRIVATE

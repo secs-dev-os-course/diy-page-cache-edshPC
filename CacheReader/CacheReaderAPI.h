@@ -14,7 +14,7 @@ extern "C" {
 
 
 // Открытие файла по заданному пути файла, доступного для чтения
-CRAPI int lab2_open(const char *path);
+CRAPI int lab2_open(int *fd, const char *path);
 
 // Закрытие файла по хэндлу
 CRAPI int lab2_close(int fd);
