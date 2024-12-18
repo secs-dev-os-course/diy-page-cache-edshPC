@@ -7,7 +7,8 @@
         return -1; }
 
 namespace os {
-    std::unordered_map<int, CacheReader *> readers;
+    static std::unordered_map<int, CacheReader *> readers;
+    static int next_fd = 1;
 }
 
 // Открытие файла по заданному пути файла, доступного для чтения
@@ -15,7 +16,8 @@ int lab2_open(int *fd, const char *path) {
     try {
         if (!fd || !path) return -1;
         auto reader = new os::CacheReader(path);
-        *fd = reader->open();
+        reader->open();
+        *fd = os::next_fd++;
         os::readers[*fd] = reader;
         return 0;
     } CATCH_N_PRINT;

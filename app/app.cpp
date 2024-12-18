@@ -3,8 +3,10 @@
 #include "CacheReader/CacheReaderAPI.h"
 
 int main() {
-    lab2_open("TEST");
-    int a;
-    std::cin >> a;
+    int fd;
+    lab2_open(&fd, "test.txt");
+    for (int i = 1; i < 1000000; i++) {
+
+    }
     return 0;
 }

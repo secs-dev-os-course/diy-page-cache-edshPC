@@ -5,13 +5,14 @@
 namespace os {
     class CacheReader {
         const char *path;
-        int fd;
+        HANDLE hFile = INVALID_HANDLE_VALUE;
+        bool isOpen = false;
 
     public:
-        CacheReader(const char *path);
+        explicit CacheReader(const char *path);
         ~CacheReader();
 
-        int open();
+        void open();
         void close();
 
         size_t read(void *buffer, size_t size);
