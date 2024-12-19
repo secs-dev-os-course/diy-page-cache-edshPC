@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CacheReader.h"
 #include "Global.h"
 
 #define CACHE_PAGE_SIZE (4 * 1 << 10) // 4 Kb
@@ -8,6 +7,7 @@
 
 namespace os {
     using Page = std::vector<char>;
+    class CacheReader;
 
     class LFUCache {
         struct Block {
@@ -30,10 +30,10 @@ namespace os {
         size_t cacheSize;
         std::unordered_map<int, Block *> cache; // key -> block
         std::set<Block *, Compare> blocks; // (begin) least freq used -> most (end)
-        CacheReader& reader;
+        CacheReader* reader;
 
     public:
-        LFUCache(size_t cacheSize, CacheReader& reader);
+        LFUCache(size_t cacheSize, CacheReader *reader);
 
         void put_page(int key, Page &value);
         Page &get(int key, bool modify = false);

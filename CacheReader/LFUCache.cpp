@@ -1,7 +1,9 @@
 #include "LFUCache.h"
 
+#include "CacheReader.h"
+
 namespace os {
-    LFUCache::LFUCache(size_t cacheSize, CacheReader &reader)
+    LFUCache::LFUCache(size_t cacheSize, CacheReader *reader)
         : cacheSize(cacheSize), reader(reader) {
     }
 
@@ -20,7 +22,7 @@ namespace os {
             incrementFrequency(key);
         } else {
             Page new_page(CACHE_PAGE_SIZE);
-            size_t read = reader.readPage(key, new_page);
+            size_t read = reader->readPage(key, new_page);
             new_page.resize(read);
             put_page(key, new_page);
         }
@@ -29,9 +31,9 @@ namespace os {
     }
 
     void LFUCache::syncronize() {
-        for (auto block : blocks) {
+        for (auto block: blocks) {
             if (block->modified) {
-                reader.writePage(block->key, block->value);
+                reader->writePage(block->key, block->value);
                 block->modified = false;
             }
         }
@@ -44,7 +46,7 @@ namespace os {
             cache.erase(lfuBlock->key);
             std::cout << "Cache block " << lfuBlock->key << " removed.\n";
             if (lfuBlock->modified)
-                reader.writePage(lfuBlock->key, lfuBlock->value); // сливаем на диск
+                reader->writePage(lfuBlock->key, lfuBlock->value); // сливаем на диск
             delete lfuBlock; // Освобождаем память
         }
     }
