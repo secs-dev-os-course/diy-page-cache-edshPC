@@ -1,15 +1,11 @@
 #include "LFUCache.h"
 
 namespace os {
-    LFUCache::LFUCache(size_t cacheSize) : cacheSize(cacheSize) {
+    LFUCache::LFUCache(size_t cacheSize, CacheReader &reader)
+        : cacheSize(cacheSize), reader(reader) {
     }
 
-    void LFUCache::refer(int key, T& value) {
-        if (cache.contains(key)) {
-            incrementFrequency(key);
-            return;
-        }
-
+    void LFUCache::put_page(int key, Page &value) {
         if (cache.size() >= cacheSize) {
             evictLFU();
         }
@@ -19,22 +15,40 @@ namespace os {
         std::cout << "Cache block " << key << " inserted.\n";
     }
 
-    T& LFUCache::get(int key, const std::function<T&(int)>& supplier) {
-        T& value = cache.contains(key) ? cache.at(key)->value : supplier(key);
-        refer(key, value);
-        return value;
+    Page &LFUCache::get(int key, bool modify) {
+        if (cache.contains(key)) {
+            incrementFrequency(key);
+        } else {
+            Page new_page(CACHE_PAGE_SIZE);
+            size_t read = reader.readPage(key, new_page);
+            new_page.resize(read);
+            put_page(key, new_page);
+        }
+        if (modify) cache.at(key)->modified = true;
+        return cache.at(key)->value;
+    }
+
+    void LFUCache::syncronize() {
+        for (auto block : blocks) {
+            if (block->modified) {
+                reader.writePage(block->key, block->value);
+                block->modified = false;
+            }
+        }
     }
 
     void LFUCache::evictLFU() {
         if (!blocks.empty()) {
-            Block* lfuBlock = *blocks.begin(); // Находим блок с наименьшей частотой
+            Block *lfuBlock = *blocks.begin(); // Находим блок с наименьшей частотой
             blocks.erase(blocks.begin());
             cache.erase(lfuBlock->key);
             std::cout << "Cache block " << lfuBlock->key << " removed.\n";
+            if (lfuBlock->modified)
+                reader.writePage(lfuBlock->key, lfuBlock->value); // сливаем на диск
             delete lfuBlock; // Освобождаем память
         }
     }
-    
+
     void LFUCache::incrementFrequency(int key) {
         Block *block = cache[key];
         blocks.erase(block); // Удаляем из set
