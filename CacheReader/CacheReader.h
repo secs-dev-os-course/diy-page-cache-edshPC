@@ -9,7 +9,7 @@ namespace os {
         const char *path;
         HANDLE hFile = INVALID_HANDLE_VALUE;
         bool isOpen = false;
-        off_t offset = 0;
+        int64_t offset = 0;
 
     public:
         explicit CacheReader(const char *path);
@@ -24,7 +24,11 @@ namespace os {
         void fsync();
 
         size_t readPage(int key, Page& page);
-        void writePage(int key, const Page& page);
+        void writePage(int key, Page &page);
 
+    private:
+        void mReadFile(char *buf, size_t size, LPDWORD read = nullptr);
+        void mWriteFile(const char *buf, size_t size, LPDWORD write = nullptr);
+        int64_t mSetFilePointer(int64_t offset, int whence = FILE_BEGIN);
     };
 }

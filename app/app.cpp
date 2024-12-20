@@ -20,5 +20,8 @@ int main() {
     lab2_read(fd, buf, 9999, &read);
     buf[read] = 0;
     std::cout << buf;
+    std::string write_str = "Hello World!\n";
+    lab2_write(fd, write_str.c_str(), write_str.size(), nullptr);
+    lab2_close(fd);
     return 0;
 }
