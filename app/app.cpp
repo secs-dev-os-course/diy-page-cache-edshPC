@@ -1,27 +1,16 @@
 #include <iostream>
-#include <vector>
 
-#include "CacheReader/CacheReaderAPI.h"
+namespace os {
+    extern int compute();
+    extern int compute_no_cache();
+}
 
 int main() {
-    int fd;
-    lab2_open(&fd, "test.txt");
-    char c;
-    size_t read;
-    lab2_read(fd, &c, 1, &read);
-    while (read) {
-        std::cout << c;
-        lab2_read(fd, &c, 1, &read);
+    try {
+        os::compute();
+        //os::compute_no_cache();
+    } catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
-    lab2_close(fd);
-
-    lab2_open(&fd, "test.txt");
-    char buf[10000];
-    lab2_read(fd, buf, 9999, &read);
-    buf[read] = 0;
-    std::cout << buf;
-    std::string write_str = "Hello World!\n";
-    lab2_write(fd, write_str.c_str(), write_str.size(), nullptr);
-    lab2_close(fd);
     return 0;
 }
