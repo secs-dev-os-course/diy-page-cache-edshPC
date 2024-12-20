@@ -26,7 +26,7 @@ CRAPI int lab2_read(int fd, void *buf, size_t count, size_t *read);
 CRAPI int lab2_write(int fd, const void *buf, size_t count, size_t *written);
 
 // Перестановка позиции указателя на данные файла
-CRAPI off_t lab2_lseek(int fd, off_t offset, int whence);
+CRAPI int lab2_lseek(int fd, off_t offset, int whence, off_t *new_offset);
 
 // Синхронизация данных из кэша с диском
 CRAPI int lab2_fsync(int fd);

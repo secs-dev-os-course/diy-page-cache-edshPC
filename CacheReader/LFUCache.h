@@ -2,8 +2,8 @@
 
 #include "Global.h"
 
-#define CACHE_PAGE_SIZE (4 * 1 << 10) // 4 Kb
-#define CACHE_SIZE (32 * 1 << 20) // 32 Mb
+#define CACHE_PAGE_SIZE (256 * 1 << 10) // 256 Kb
+#define CACHE_SIZE (256 * 1 << 20) // 256 Mb
 
 namespace os {
     using Page = std::vector<char>;

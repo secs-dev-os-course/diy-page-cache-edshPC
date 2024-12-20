@@ -4,7 +4,7 @@
 
 #define CATCH_N_PRINT catch (const std::exception &e) { \
         std::cerr << e.what() << std::endl;             \
-        return -1; }
+        return GetLastError(); }
 
 namespace os {
     static std::unordered_map<int, CacheReader *> readers;
@@ -15,6 +15,7 @@ namespace os {
 int lab2_open(int *fd, const char *path) {
     try {
         if (!fd || !path) return -1;
+        *fd = -1;
         auto reader = new os::CacheReader(path);
         reader->open();
         *fd = os::next_fd++;
@@ -57,10 +58,12 @@ int lab2_write(int fd, const void *buf, size_t count, size_t *written) {
 }
 
 // Перестановка позиции указателя на данные файла
-off_t lab2_lseek(int fd, off_t offset, int whence) {
+int lab2_lseek(int fd, off_t offset, int whence, off_t *new_offset) {
     try {
         auto reader = os::readers.at(fd);
-        return reader->lseek(offset, whence);
+        off_t res = reader->lseek(offset, whence);
+        if (new_offset) *new_offset = res;
+        return 0;
     } CATCH_N_PRINT;
 }
 

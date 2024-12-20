@@ -16,7 +16,7 @@ namespace os {
             GENERIC_READ | GENERIC_WRITE, // Открыть для чтения и записи
             FILE_SHARE_READ | FILE_SHARE_WRITE, // Разрешить совместный доступ на чтение и запись
             nullptr, // Без безопасности
-            OPEN_ALWAYS, // Открыть файл, если он существует, или создать новый
+            OPEN_EXISTING, // Открыть файл, если он существует
             FILE_FLAG_NO_BUFFERING, // Отключить кэширование
             nullptr // Без шаблона
         );
@@ -88,7 +88,20 @@ namespace os {
     }
 
     off_t CacheReader::lseek(off_t off, int whence) {
-        offset = mSetFilePointer(off, whence);
+        switch (whence) {
+            case SEEK_SET:
+                offset = off;
+                break;
+            case SEEK_CUR:
+                offset += off;
+                break;
+            case SEEK_END:
+                offset = mSetFilePointer(0, FILE_END);
+                offset += off;
+                break;
+            default:
+                throw std::runtime_error("Invalid lseek operation");
+        }
         return static_cast<off_t>(offset);
     }
 
