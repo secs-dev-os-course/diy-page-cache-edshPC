@@ -24,7 +24,11 @@ target_sources(CacheReader PRIVATE
 target_compile_definitions(CacheReader PRIVATE
         CACHE_READER_EXPORTS)
 
-add_custom_command(TARGET CacheReader POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_BINARY_DIR}/CacheReader.dll"
-        "${CMAKE_BINARY_DIR}/app")
+set(COPY_TO_APP OFF)
+
+if (COPY_TO_APP)
+    add_custom_command(TARGET CacheReader POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_BINARY_DIR}/CacheReader.dll"
+            "${CMAKE_BINARY_DIR}/app")
+endif ()
