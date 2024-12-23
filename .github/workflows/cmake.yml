@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - trunk
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install CMake
+        run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+
+      - name: Configure CMake
+        run: cmake -S . -B build
+
+      - name: Build
+        run: cmake --build build --config Debug --target CacheReader
+
+      - name: Upload dll
+        uses: actions/upload-artifact@v4
+        with:
+          name: CacheReader.dll
+          path: |
+            build\CacheReader\Debug
+
+      - name: Upload lib
+        uses: actions/upload-artifact@v4
+        with:
+          name: CacheReader.lib
+          path: |
+            build\CacheReader\Debug
+
+      - name: Upload inc
+        uses: actions/upload-artifact@v4
+        with:
+          name: CacheReaderAPI.h
+          path: |
+            CacheReader
